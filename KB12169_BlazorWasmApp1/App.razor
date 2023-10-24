@@ -1,0 +1,73 @@
+﻿@inject PeopleDataService PeopleDS;
+
+@if(People == null)
+{
+   <div><span>Loading...</span></div> 
+}
+else
+{
+    <div class="my_grid_wrapper">
+        <IgbGrid @ref="grid"
+            Data="People" PrimaryKey="ID" Height="300px" DisplayDensity="DisplayDensity.Compact" AutoGenerate="false"
+            ActiveNodeChange="OnActiveNodeChange">
+            <IgbColumn Field="@nameof(Person.ID)" Header="ID" />
+            <IgbColumn Field="@nameof(Person.FamilyName)" Header="FamilyName" />
+            <IgbColumn Field="@nameof(Person.GivenName)" Header="GivenName" />
+            <IgbColumn Field="@nameof(Person.Prefecture)" Header="Prefecture" />
+            <IgbColumn Field="@nameof(Person.City)" Header="City" />
+        </IgbGrid>
+    </div>
+}
+
+@if (this.PersonOfActiveCell != null)
+{
+    <div class="my_table_wrapper">
+        <h4>クリックされたセルに紐づいたデータ</h4>
+        <div class="table_with_border">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>FamilyName</th>
+                        <th>GivenName</th>
+                        <th>Prefecture</th>
+                        <th>City</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@this.PersonOfActiveCell.ID</td>
+                        <td>@this.PersonOfActiveCell.FamilyName</td>
+                        <td>@this.PersonOfActiveCell.GivenName</td>
+                        <td>@this.PersonOfActiveCell.Prefecture</td>
+                        <td>@this.PersonOfActiveCell.City</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@code {
+    private IEnumerable<Person>? People = null;
+    private Person? PersonOfActiveCell = null;
+    private IgbGrid? grid;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.People = await PeopleDS.GetPeopleAsync();
+    }
+
+    private async Task OnActiveNodeChange(IgbActiveNodeChangeEventArgs e)
+    {
+        if(this.grid != null)
+        {
+            // アクティブセルの行インデックスを取得する。
+            int activeRowIndex = (int)e.Detail.Row;
+            // 行インデックスをもとにRowTypeオブジェクトを取得する。
+            var rowType = await this.grid.GetRowByIndexAsync(activeRowIndex);
+            // 紐づいているデータを取り出す。
+            this.PersonOfActiveCell = rowType.Data as Person;
+        }
+    }
+}

@@ -1,0 +1,17 @@
+﻿.my_grid_wrapper
+{
+    margin: 1em;
+}
+
+.my_table_wrapper{
+    margin: 1em;
+}
+
+.table_with_border table, .table_with_border td, .table_with_border th {
+    border-collapse: collapse;
+    border: 1px solid #333;
+}
+
+.table_with_border th {
+    background-color: #dedede;
+}
